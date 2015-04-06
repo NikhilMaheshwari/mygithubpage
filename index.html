@@ -1,140 +1,107 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-<title>Nikhil Maheshwari | Home Page</title>
-<meta name="description" content="" />
-<meta name="keywords" content="" />
-<meta name="author" content="" />
-
-<script type="text/javascript" src="swfobject.js"></script>
-<script type="text/javascript">
-	var flashvars = {};
-	var params = {
-		menu: "true",
-		quality: "high",
-		scale: "noscale",
-		salign: "tl",
-		wmode: "window",
-		bgcolor: "#ffffff",
-		allowscriptaccess: "always"
-	};
-	var attributes = {id:"flashcontent"};
-	swfobject.embedSWF("sapling.swf", "flashcontent", "100%", "100%", "9", false, flashvars, params, attributes);
-</script>
-
-<!-- Begin iPhone/iPad detection code -->
-<script type="text/javascript">
-	if ((navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPod') != -1) || (navigator.userAgent.indexOf('iPad') != -1)) {
-		document.location = "mobile/";
-	}
-</script>
-<!-- End iPhone/iPad detection code -->
-
-<style type="text/css">
-
-html {
-	height: 100%;
-	overflow: hidden;
-}
-
-body {
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	background-color: #f5f9ed;
-	font-family: Arial, sans-serif;
-	color: #333333;
-}
-
-a, a:visited, a:link {
-	color: #07c2a8;
-	text-decoration: underline;
-}
-
-a:active, a:hover {
-	text-decoration: none;
-}
-
-#flashcontent {
-	width: 100%;
-	height: 100%;
-}
-
-#noflash {
-	width: 320px;
-	margin: 0;
-	padding: 0;
-}
-
-h1 {
-	font-size: 30px;
-	letter-spacing: -2px;
-	margin-bottom: -10px;
-}
-
-h2 {
-	font-size: 12px;
-}
-
-p {
-	font-size: 12px;
-}
-
-#footer p {
-	font-size: 11px;
-}
-
-#content, #footer {
-	padding: 20px;
-}
-
-#upgrade {
-	background-color: #ffffff;
-	padding: 20px;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	border: 1px dotted #cccccc;
-}
-
-</style>
-
-</head>
+<html>
 <body>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1599778603593912', // App ID
+      channelUrl : 'channel.html', // Channel File
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true  // parse XFBML
+    });
+    
+    
+	FB.Event.subscribe('auth.authResponseChange', function(response) 
+	{
+ 	 if (response.status === 'connected') 
+  	{
+  		document.getElementById("message").innerHTML +=  "<br>Connected to Facebook";
+  		//SUCCESS
+  		
+  	}	 
+	else if (response.status === 'not_authorized') 
+    {
+    	document.getElementById("message").innerHTML +=  "<br>Failed to Connect";
 
-<div id="flashcontent">
-	
-	<div id="noflash">
-		
-		<div id="content">
-		
-			<h1>Nikhil Maheshwari</h1>
-			<h2>Software Developer &amp; Front-End Web Developer</h2>
-			
-			<div id="upgrade">
-			
-				<p><strong>Adobe Flash Player 9 is required to view my site</strong></p>
-				<p><a href="http://www.adobe.com/go/getflashplayer/">&raquo; Download the latest version here</a></p>
-				<p><a href="mobile/">&raquo; Visit a non-Flash version of my website</a></p>
-			
-			</div><!-- / #upgrade -->
-			
-			<p><a href="mailto:nikhilmaheshwari46@yahoo.in">nikhilmaheshwari46@yahoo.in</a></p>
-			<p><a href="http://www.nikzz.me/Resume.pdf">View my resume</a></p>
-			<p><a href="http://in.linkedin.com/pub/nikhil-maheshwari/63/312/19a/">Visit me on LinkedIn</a></p>
-		
-		</div><!-- / #content -->
-		
-		<div id="footer">
-			
-			<p>&copy; 2014 Nikhil Maheshwari. All rights reserved.</p>
-		
-		</div><!-- / #footer -->
-		
-	</div><!-- / #noflash -->
-	
-</div><!-- / #flashcontent -->
+		//FAILED
+    } else 
+    {
+    	document.getElementById("message").innerHTML +=  "<br>Logged Out";
 
+    	//UNKNOWN ERROR
+    }
+	});	
+	
+    };
+    
+   	function Login()
+	{
+	
+		FB.login(function(response) {
+		   if (response.authResponse) 
+		   {
+		    	getUserInfo();
+  			} else 
+  			{
+  	    	 console.log('User cancelled login or did not fully authorize.');
+   			}
+		 },{scope: 'email,user_photos,user_videos'});
+	
+	
+	}
+
+  function getUserInfo() {
+	    FB.api('/me', function(response) {
+
+	  var str="<b>Name</b> : "+response.name+"<br>";
+	  	  str +="<b>Link: </b>"+response.link+"<br>";
+	  	  str +="<b>Username:</b> "+response.username+"<br>";
+	  	  str +="<b>id: </b>"+response.id+"<br>";
+	  	  str +="<b>Email:</b> "+response.email+"<br>";
+	  	  str +="<input type='button' value='Get Photo' onclick='getPhoto();'/>";
+	  	  str +="<input type='button' value='Logout' onclick='Logout();'/>";
+	  	  document.getElementById("status").innerHTML=str;
+	  	  	    
+    });
+    }
+	function getPhoto()
+	{
+	  FB.api('/me/picture?type=normal', function(response) {
+
+		  var str="<br/><b>Pic</b> : <img src='"+response.data.url+"'/>";
+	  	  document.getElementById("status").innerHTML+=str;
+	  	  	    
+    });
+	
+	}
+	function Logout()
+	{
+		FB.logout(function(){document.location.reload();});
+	}
+
+  // Load the SDK asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document));
+
+</script>
+<div align="center">
+<h2>Facebook OAuth Javascript Demo</h2>
+
+<div id="status">
+ Click on Below Image to start the demo: <br/>
+<img src="LoginWithFacebook.png" style="cursor:pointer;" onClick="Login()"/>
+</div>
+<br/><br/><br/><br/><br/>
+<div id="message">
+Logs:<br/>
+</div>
+
+</div>
 </body>
 </html>
