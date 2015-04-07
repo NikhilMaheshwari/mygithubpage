@@ -1,10 +1,3 @@
-<?php
-
-$sApplicationId = '1599778603593912';
-$sApplicationSecret = 'b2a3ba912d0b5e78adec0a041c7dff0e';
-$iLimit = 99;
-
-?>
 <!DOCTYPE html>
 <html lang="en" xmlns:fb="https://www.facebook.com/2008/fbml">
     <head>
@@ -46,14 +39,18 @@ $iLimit = 99;
         <div id="fb-root"></div>
 
         <script>
-        function sortMethod(a, b) {
+        var sApplicationId = '1599778603593912';
+	   var sApplicationSecret = 'b2a3ba912d0b5e78adec0a041c7dff0e';
+	   var iLimit = 99;
+
+	   function sortMethod(a, b) {
             var x = a.name.toLowerCase();
             var y = b.name.toLowerCase();
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
         }
 
         window.fbAsyncInit = function() {
-            FB.init({ appId: '<?= $sApplicationId ?>', 
+            FB.init({ appId: sApplicationId , 
                 status: true, 
                 cookie: true,
                 xfbml: true,
@@ -71,7 +68,7 @@ $iLimit = 99;
                     });
 
                     // get friends
-                    FB.api('/me/friends?limit=<?= $iLimit ?>', function(response) {
+                    FB.api('/me/friends?limit=iLimit', function(response) {
                         var result_holder = document.getElementById('result_friends');
                         var friend_data = response.data.sort(sortMethod);
 
