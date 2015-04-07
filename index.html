@@ -1,113 +1,107 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:fb="https://www.facebook.com/2008/fbml">
-    <head>
-        <meta charset="utf-8" />
-        <title>Facebook API - Get friends list | Script Tutorials</title>
-        <style>
-	   	#result_friends {
-    margin: 0 auto;
-    overflow: hidden;
-    width: 900px;
-}
-#result_friends h2 {
-    text-align: center;
-}
-#result_friends div {
-    border: 1px solid #888;
-    box-shadow: 3px 3px 0 #000;
-    float: left;
-    margin-bottom: 10px;
-    margin-right: 10px;
-    padding: 5px;
-    width: 275px;
-}
-#result_friends img {
-    float: left;
-    margin-right: 10px;
-}
+<html>
+<body>
+<div id="fb-root"></div>
+<script type="text/javascript" src="jquery-1.9.0.min.js"></script>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1599778603593912', // App ID
+      channelUrl : 'channel.html', // Channel File
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true  // parse XFBML
+    });
+    
+    
+	FB.Event.subscribe('auth.authResponseChange', function(response) 
+	{
+ 	 if (response.status === 'connected') 
+  	{
+  		document.getElementById("message").innerHTML +=  "<br>Connected to Facebook";
+  		//SUCCESS
+  		
+  	}	 
+	else if (response.status === 'not_authorized') 
+    {
+    	document.getElementById("message").innerHTML +=  "<br>Failed to Connect";
 
-	   </style>
-    </head>
-    <body>
-        <center>
-            <h1>Authorization step:</h1>
-            <div id="user-info"></div>
-            <button id="fb-auth">Please login here</button>
-        </center>
+		//FAILED
+    } else 
+    {
+    	document.getElementById("message").innerHTML +=  "<br>Logged Out";
 
-        <div id="result_friends"></div>
-        <div id="fb-root"></div>
+    	//UNKNOWN ERROR
+    }
+	});	
+	
+    };
+    
+   	function Login()
+	{
+	
+		FB.login(function(response) {
+		   if (response.authResponse) 
+		   {
+		    	getUserInfo();
+  			} else 
+  			{
+  	    	 console.log('User cancelled login or did not fully authorize.');
+   			}
+		 },{scope: 'email, user_friends'});
+	
+	
+	}
 
-        <script>
-        var sApplicationId = '1599778603593912';
-	   var sApplicationSecret = 'b2a3ba912d0b5e78adec0a041c7dff0e';
-	   var iLimit = 99;
+  function getUserInfo() {
+	    FB.api('/me', function(response) {
 
-	   function sortMethod(a, b) {
-            var x = a.name.toLowerCase();
-            var y = b.name.toLowerCase();
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-        }
-
-        window.fbAsyncInit = function() {
-            FB.init({ appId: sApplicationId , 
-                status: true, 
-                cookie: true,
-                xfbml: true,
-                oauth: true
+	  var str="<b>Name</b> : "+response.name+"<br>";
+	  	  str +="<b>Link: </b>"+response.link+"<br>";
+	  	  str +="<b>Username:</b> "+response.username+"<br>";
+	  	  str +="<b>id: </b>"+response.id+"<br>";
+	  	  str +="<b>Email:</b> "+response.email+"<br>";
+	  	  str +="<input type='button' value='Logout' onclick='Logout();'/>";
+	  	  document.getElementById("status").innerHTML=str;
+	  	  	    
+    });
+    FB.api('/me/friends', function(response) {
+        if(response.data) {
+            $.each(response.data,function(index,friend) {
+                console.log(friend.name + ' has id:' + friend.id);
             });
+        } else {
+            alert("Error!");
+        }
+    });
+    }
+	
+	function Logout()
+	{
+		FB.logout(function(){document.location.reload();});
+	}
 
-            function updateButton(response) {
-                var button = document.getElementById('fb-auth');
+  // Load the SDK asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document));
 
-                if (response.authResponse) { // in case if we are logged in
-                    var userInfo = document.getElementById('user-info');
-                    FB.api('/me', function(response) {
-                        userInfo.innerHTML = '<img src="https://graph.facebook.com/' + response.id + '/picture">' + response.name;
-                        button.innerHTML = 'Logout';
-                    });
+</script>
+<div align="center">
+<h2>Facebook OAuth Javascript Demo</h2>
 
-                    // get friends
-                    FB.api('/me/friends?limit=iLimit', function(response) {
-                        var result_holder = document.getElementById('result_friends');
-                        var friend_data = response.data.sort(sortMethod);
+<div id="status">
+ Click on Below Image to start the demo: <br/>
+<img src="LoginWithFacebook.png" style="cursor:pointer;" onClick="Login()"/>
+</div>
+<br/><br/><br/><br/><br/>
+<div id="message">
+Logs:<br/>
+</div>
 
-                        var results = '';
-                        for (var i = 0; i < friend_data.length; i++) {
-                            results += '<div><img src="https://graph.facebook.com/' + friend_data[i].id + '/picture">' + friend_data[i].name + '</div>';
-                        }
-
-                        // and display them at our holder element
-                        result_holder.innerHTML = '<h2>Result list of your friends:</h2>' + results;
-                    });
-
-                    button.onclick = function() {
-                        FB.logout(function(response) {
-                            window.location.reload();
-                        });
-                    };
-                } else { // otherwise - dispay login button
-                    button.onclick = function() {
-                        FB.login(function(response) {
-                            if (response.authResponse) {
-                                window.location.reload();
-                            }
-                        }, {scope:'email'});
-                    }
-                }
-            }
-
-            // run once with current status and whenever the status changes
-            FB.getLoginStatus(updateButton);
-            FB.Event.subscribe('auth.statusChange', updateButton);    
-        };
-            
-        (function() {
-            var e = document.createElement('script'); e.async = true;
-            e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-            document.getElementById('fb-root').appendChild(e);
-        }());
-        </script>
-
+</div>
 </body>
 </html>
