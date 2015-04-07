@@ -1,6 +1,7 @@
 <html>
 <body>
 <div id="fb-root"></div>
+<script type="text/javascript" src="jquery-1.9.0.min.js"></script>
 <script>
   window.fbAsyncInit = function() {
     FB.init({
@@ -46,7 +47,7 @@
   			{
   	    	 console.log('User cancelled login or did not fully authorize.');
    			}
-		 },{scope: 'email,user_photos,user_videos'});
+		 },{scope: 'email, user_friends'});
 	
 	
 	}
@@ -59,10 +60,18 @@
 	  	  str +="<b>Username:</b> "+response.username+"<br>";
 	  	  str +="<b>id: </b>"+response.id+"<br>";
 	  	  str +="<b>Email:</b> "+response.email+"<br>";
-	  	  str +="<input type='button' value='Get Photo' onclick='getPhoto();'/>";
 	  	  str +="<input type='button' value='Logout' onclick='Logout();'/>";
 	  	  document.getElementById("status").innerHTML=str;
 	  	  	    
+    });
+    FB.api('/me/friends', function(response) {
+        if(response.data) {
+            $.each(response.data,function(index,friend) {
+                alert(friend.name + ' has id:' + friend.id);
+            });
+        } else {
+            alert("Error!");
+        }
     });
     }
 	function getPhoto()
